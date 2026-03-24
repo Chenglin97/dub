@@ -154,11 +154,17 @@ export const PUT = withWorkspace(
         });
 
         waitUntil(
-          sendWorkspaceWebhook({
-            trigger: "link.updated",
-            workspace,
-            data: linkEventSchema.parse(response),
-          }),
+          (async () => {
+            try {
+              await sendWorkspaceWebhook({
+                trigger: "link.updated",
+                workspace,
+                data: linkEventSchema.parse(response),
+              });
+            } catch (e) {
+              console.error("Failed to send link.updated webhook:", e);
+            }
+          })(),
         );
 
         return NextResponse.json(response, {

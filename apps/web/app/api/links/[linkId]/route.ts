@@ -179,11 +179,17 @@ export const PATCH = withWorkspace(
       });
 
       waitUntil(
-        sendWorkspaceWebhook({
-          trigger: "link.updated",
-          workspace,
-          data: linkEventSchema.parse(response),
-        }),
+        (async () => {
+          try {
+            await sendWorkspaceWebhook({
+              trigger: "link.updated",
+              workspace,
+              data: linkEventSchema.parse(response),
+            });
+          } catch (e) {
+            console.error("Failed to send link.updated webhook:", e);
+          }
+        })(),
       );
 
       return NextResponse.json(response, {
@@ -224,11 +230,17 @@ export const DELETE = withWorkspace(
     const response = await deleteLink(link.id);
 
     waitUntil(
-      sendWorkspaceWebhook({
-        trigger: "link.deleted",
-        workspace,
-        data: linkEventSchema.parse(response),
-      }),
+      (async () => {
+        try {
+          await sendWorkspaceWebhook({
+            trigger: "link.deleted",
+            workspace,
+            data: linkEventSchema.parse(response),
+          });
+        } catch (e) {
+          console.error("Failed to send link.deleted webhook:", e);
+        }
+      })(),
     );
 
     return NextResponse.json({ id: link.id }, { headers });

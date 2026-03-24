@@ -86,11 +86,17 @@ export const POST = withWorkspace(
 
       if (response.projectId && response.userId) {
         waitUntil(
-          sendWorkspaceWebhook({
-            trigger: "link.created",
-            workspace,
-            data: linkEventSchema.parse(response),
-          }),
+          (async () => {
+            try {
+              await sendWorkspaceWebhook({
+                trigger: "link.created",
+                workspace,
+                data: linkEventSchema.parse(response),
+              });
+            } catch (e) {
+              console.error("Failed to send link.created webhook:", e);
+            }
+          })(),
         );
       }
 

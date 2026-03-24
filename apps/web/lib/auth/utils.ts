@@ -16,6 +16,18 @@ export interface Session {
 }
 
 export const getSession = async () => {
+  // Local dev bypass
+  if (process.env.NODE_ENV === "development") {
+    return {
+      user: {
+        id: "user_demo_001",
+        name: "Demo User",
+        email: "demo@local.dev",
+        isMachine: false,
+        defaultWorkspace: "demo",
+      },
+    } as Session;
+  }
   return getServerSession(authOptions) as Promise<Session>;
 };
 
